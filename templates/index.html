@@ -1,24 +1,31 @@
-{% extends 'layout.html' %}
-
-{% block body %}
-<nav>
-    <div >
-        <h4 class="logo"><a href="index.html"></a>L<span>o</span>go</h4>
+{% extends 'layout.html' %} {% block body %}
+<body>
+  <article>
+    <nav>
+      <ul>
+        <a href="">Contact</a>
+        <a href="">About</a>
+        <a href="" id="left">Logo</a>
+      </ul>
+    </nav>
+    <h1 class="fade-in">Sistem Informasi Mahasiswa Informatika Untan</h1>
+    <div id="content" class="fade-in-2">
+      <ul type="none">
+        <li><a href="">Mahasiswa</a></li>
+        <li><a href="">Admin</a></li>
+      </ul>
     </div>
-    <ul class="nav-links">
-        <li>
-            <a href="#">Home</a>
-        </li>
-        <li>
-            <a href="#">About</a>
-        </li>
-        <li>
-            <a href="#">Media</a>
-        </li>
-        <li>
-            <a href="#">Contacts</a>
-        </li>
-    </ul>
-</nav>
+    <div class="footer">
+      <p>
+        Kyoto Industries ©
+        <span
+          ><script>
+            document.write(/\d{4}/.exec(Date())[0]);
+          </script>
+        </span>
+      </p>
+    </div>
+  </article>
+</body>
 
 {% endblock %}
