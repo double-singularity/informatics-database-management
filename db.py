@@ -1,22 +1,40 @@
 import pymysql
 
-try:
-    db = pymysql.connect(
-        host="localhost",
-        user="root",
-        password="",
-    )
+class Database:
 
-    print("Connection successful")
+    def __init__(self) -> None:
+        self.db = None
+        self.cursor = None
 
-except pymysql.MySQLError as e:
-    print(f"Error connecting to database: {e}")
+        try:
+            db = pymysql.connect(
+                host="localhost",
+                user="root",
+                password="",
+                database="mahasiswaDB"
+            )
+            print("Connection successful")
 
+            self.cursor = db.cursor()
 
-cursor = db.cursor()
-cursor.execute("SHOW DATABASES;")
+        except pymysql.MySQLError as e:
+            print(f"Error connecting to database: {e}")
 
+    def __del__(self) -> None:
+        if self.cursor:
+            self.cursor.close()
+        if self.db:
+            self.db.close()
 
-# Closing the cursor and connection to the database
-cursor.close()
-db.close()
+    def exec(self, string):
+        if self.cursor:
+            self.cursor.execute(string)
+            return self.cursor
+        else:
+            print("Cursor not initialized")
+            return None
+
+test = Database()
+
+for table in test.exec("SELECT * FROM mahasiswa"):
+    print(table)
