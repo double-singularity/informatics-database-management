@@ -22,10 +22,6 @@ def administrator():
 def homepage():
     return "<h1>this is homepage</h1>"
 
-@app.route("/display/<table_name>", methods=["POST", "GET"])
-def display(table_name):
-    return render_template("display.html", my_list=db.exec(f"SELECT * FROM {table_name}"))
-
 @app.route('/view/<table_name>')
 def view_table(table_name):
     columns = db.exec(f"DESCRIBE {table_name}")

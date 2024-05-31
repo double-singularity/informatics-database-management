@@ -5,11 +5,21 @@
     <title>View Table: {{ table_name }}</title>
 </head>
 <body>
-    {% for item in my_list %}
-        <li>
-            <td>{{ item[1] }}</td>
-            <td>{{ item[2] }}</td>
-        </li>
+
+<table style="width:100%">
+    <tr>
+    {% for item in first_columns %}
+        <th>{{ item }}</th>
     {% endfor %}
+    </tr>
+    {% for data in rows %}
+        <tr>
+            {% for thing in data %}
+                <td>{{ thing }}</td>
+            {% endfor %}
+        </tr>
+    {% endfor %}
+</table> 
+
 </body>
 </html>
