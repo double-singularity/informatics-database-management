@@ -12,7 +12,7 @@ def home():
 
 @app.route("/administrator")
 def administrator():
-    return 'test'
+    return render_template("administrator.html")
 
 @app.route("/homepage")
 def homepage():
