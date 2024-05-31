@@ -1,10 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>View Table: {{ table_name }}</title>
-</head>
-<body>
+{% extends 'layout.html' %} 
+
+{% block body %}
 
 <table style="width:100%">
     <tr>
@@ -21,5 +17,5 @@
     {% endfor %}
 </table> 
 
-</body>
-</html>
+{% endblock %}
+

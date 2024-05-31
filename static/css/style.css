@@ -115,3 +115,7 @@ li a:hover {
     opacity: 1;
   }
 }
+
+table, th, td {
+  border:1px solid black;
+}
