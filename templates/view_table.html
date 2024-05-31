@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>View Table: {{ table_name }}</title>
+</head>
+<body>
+    {% for item in my_list %}
+        <li>
+            <td>{{ item[1] }}</td>
+            <td>{{ item[2] }}</td>
+        </li>
+    {% endfor %}
+</body>
+</html>
