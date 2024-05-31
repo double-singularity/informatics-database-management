@@ -22,6 +22,12 @@ def administrator():
 def homepage():
     return "<h1>this is homepage</h1>"
 
+@app.route("/login", methods=["POST"])
+def login():
+    value = request.form.get('value')
+    return render_template('login.html', value=value)
+
+
 @app.route('/view/<table_name>', methods=["POST", "GET"])
 def view_table(table_name):
     columns = db.exec(f"DESCRIBE {table_name}")

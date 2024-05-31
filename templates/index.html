@@ -16,18 +16,40 @@
     <div id="content" class="fade-in-2">
       <ul type="none">  
 
-        <li><a href="/view/mahasiswa">Mahasiswa</a></li>
-        <li><a href="/view/admin">Admin</a></li>
-        
+        <li><a onclick="submitForm1('Mahasiswa')">Mahasiswa</a></li>
+        <li><a onclick="submitForm2('Admin')">Admin</a></li>
+
+        <form id="hiddenForm1" action="/login" method="POST" style="display:none;">
+          <input type="hidden" name="value" id="hiddenInput1">
+        </form>
+
+        <form id="hiddenForm2" action="/login" method="POST" style="display:none;">
+          <input type="hidden" name="value" id="hiddenInput2">
+        </form>
+
       </ul>
     </div>
     <div class="footer">
       <p>
         Kyoto Industries ©
-        <span
-          ><script>
+        <span>
+
+          <script>
+
             document.write(/\d{4}/.exec(Date())[0]);
+
+            function submitForm1(value) {
+              document.getElementById('hiddenInput1').value = value;
+              document.getElementById('hiddenForm1').submit();
+            }
+
+            function submitForm2(value) {
+              document.getElementById('hiddenInput2').value = value;
+              document.getElementById('hiddenForm2').submit();
+            }
+
           </script>
+
         </span>
       </p>
     </div>
