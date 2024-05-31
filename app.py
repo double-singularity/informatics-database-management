@@ -12,7 +12,11 @@ def home():
 
 @app.route("/administrator")
 def administrator():
-    
+    return 'test'
+
+@app.route("/homepage")
+def homepage():
+    return "<h1>this is homepage</h1>"
 
 @app.route("/display", methods=["POST", "GET"])
 def display():
