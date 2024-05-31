@@ -33,8 +33,3 @@ class Database:
         else:
             print("Cursor not initialized")
             return None
-
-test = Database()
-
-for table in test.exec("SELECT * FROM mahasiswa"):
-    print(table)

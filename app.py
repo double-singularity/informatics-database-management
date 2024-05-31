@@ -4,13 +4,16 @@ from db import Database
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "12345678"
 
+db = Database()
 
 @app.route("/", methods=["POST", "GET"])
 def home():
     return render_template("index.html")
 
-test = Database()
+@app.route("/administrator")
+def administrator():
+    
 
 @app.route("/display", methods=["POST", "GET"])
 def display():
-    return render_template("display.html", my_list=test.exec("SELECT * FROM mahasiswa"))
+    return render_template("display.html", my_list=db.exec("SELECT * FROM mahasiswa"))
