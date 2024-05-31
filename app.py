@@ -22,7 +22,7 @@ def administrator():
 def homepage():
     return "<h1>this is homepage</h1>"
 
-@app.route('/view/<table_name>')
+@app.route('/view/<table_name>', methods=["POST", "GET"])
 def view_table(table_name):
     columns = db.exec(f"DESCRIBE {table_name}")
     first_columns = []
