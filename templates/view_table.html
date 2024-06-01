@@ -3,6 +3,13 @@
 
 {% block title %} view {{ table_name }} {% endblock %}
 
+
+{% block link %}
+      rel="stylesheet"
+      href="{{url_for('static',filename='css/style.css')}}"
+{% endblock %}
+
+
 {% block body %}
 
 <table style="width:100%">

@@ -1,8 +1,29 @@
 {% extends 'layout.html' %} 
 
-{% block title %} Login {% endblock %}
+{% block title %} {{ value }} Login Page {% endblock %}
+
+{% block link %}
+      rel="stylesheet"
+      href="{{url_for('static',filename='css/login.css')}}"
+{% endblock %}
 
 {% block body %}
-<h1>This is an {{ value }} login page lol.</h1>
+
+<div class="login-container">
+    <h2>Login</h2>
+    <form action="/login" method="post">
+        <div class="input-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" required>
+        </div>
+        <div class="input-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        <button type="submit">Login</button>
+    </form>
+</div>
+
 {% endblock %}
+
 
