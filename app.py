@@ -112,7 +112,6 @@ def view_table(table_name):
         finally:
             db.disconnect()
 
-
         return render_template('view_table.html', 
                                table_name=table_name, 
                                rows=rows, 
@@ -127,4 +126,4 @@ def page_not_found(e):
     return render_template('404.html', message=e), 404
 
 if __name__ == '__main__':
-    app.run(port=1337)
+    app.run(port=1337, debug=True)
