@@ -1,5 +1,4 @@
 import pymysql
-from werkzeug.security import generate_password_hash
 
 class Database:
     def __init__(self, host="localhost", user="root", password="", database="mahasiswaDB"):

@@ -93,22 +93,38 @@ def dashboard():
 
 @app.route('/view/<table_name>', methods=["POST", "GET"])
 def view_table(table_name):
-    # if 'username' in session:
-        # Use a parameterized query to describe the table
-    columns = db.fetch_data("DESCRIBE `%s`" % table_name)
-    first_columns = [thing[0] for thing in columns]
+    if 'username' in session:  # Check if user is logged in
+        try:
+            # Connect to the database
+            db.connect()
 
-    # Fetch all rows from the table
-    rows = db.fetch_data("SELECT * FROM `%s`" % table_name)
+            # Use safe string formatting to include table name in the query
+            columns_query = f"DESCRIBE `{table_name}`"
+            columns = db.fetch_data(columns_query)
+            first_columns = [column['Field'] for column in columns]
 
-    return render_template('view_table.html', 
-                            table_name=table_name, 
-                            rows=rows, 
-                            first_columns=first_columns)
-    
-    return redirect(url_for('login'))
+            rows_query = f"SELECT * FROM `{table_name}`"
+            rows = db.fetch_data(rows_query)
+        except Exception as e:
+            # Handle database query errors gracefully
+            error_message = f"An error occurred while fetching data: {e}"
+            return render_template('error.html', error_message=error_message)
+        finally:
+            db.disconnect()
+
+
+        return render_template('view_table.html', 
+                               table_name=table_name, 
+                               rows=rows, 
+                               first_columns=first_columns)
+    else:
+        # Redirect to login page if user is not logged in
+        return redirect(url_for('login'))
 
 # page not found
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html', message=e), 404
+
+if __name__ == '__main__':
+    app.run(port=1337)
