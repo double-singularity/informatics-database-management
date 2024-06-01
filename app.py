@@ -58,3 +58,8 @@ def view_table(table_name):
                             first_columns=first_columns)
     
     return redirect(url_for('login'))
+
+# page not found
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html', message="404 Page Not Found"), 404
