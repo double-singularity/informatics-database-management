@@ -1,35 +1,52 @@
 import pymysql
+from werkzeug.security import generate_password_hash
 
 class Database:
+    def __init__(self, host="localhost", user="root", password="", database="mahasiswaDB"):
+        self.host = host
+        self.user = user
+        self.password = password
+        self.database = database
+        self.connection = None
 
-    def __init__(self) -> None:
-        self.db = None
-        self.cursor = None
-
+    def connect(self):
         try:
-            db = pymysql.connect(
-                host="localhost",
-                user="root",
-                password="",
-                database="mahasiswaDB"
+            self.connection = pymysql.connect(
+                host=self.host,
+                user=self.user,
+                password=self.password,
+                database=self.database
             )
-            print("Connection successful")
+            print("Connected to the database.")
+        except Exception as e:
+            print(f"Error connecting to the database: {e}")
 
-            self.cursor = db.cursor()
-
-        except pymysql.MySQLError as e:
-            print(f"Error connecting to database: {e}")
-
-    def __del__(self) -> None:
-        if self.cursor:
-            self.cursor.close()
-        if self.db:
-            self.db.close()
-
-    def exec(self, string):
-        if self.cursor:
-            self.cursor.execute(string)
-            return self.cursor
+    def disconnect(self):
+        if self.connection:
+            self.connection.close()
+            print("Disconnected from the database.")
         else:
-            print("Cursor not initialized")
-            return None
+            print("Not connected to any database.")
+
+    def execute_query(self, query, values=None):
+        try:
+            with self.connection.cursor() as cursor:
+                if values:
+                    cursor.execute(query, values)
+                else:
+                    cursor.execute(query)
+                self.connection.commit()
+                print("Query executed successfully.")
+        except Exception as e:
+            print(f"Error executing query: {e}")
+            self.connection.rollback()
+
+    def fetch_data(self, query):
+        try:
+            with self.connection.cursor() as cursor:
+                cursor.execute(query)
+                result = cursor.fetchall()
+                return result
+        except Exception as e:
+            print(f"Error fetching data: {e}")
+

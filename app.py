@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request, session, redirect, url_for
+from flask import Flask, render_template, request, session, redirect, url_for, flash
+from werkzeug.security import check_password_hash, generate_password_hash
 from db import Database
 
 app = Flask(__name__)
@@ -6,6 +7,7 @@ app.config["SECRET_KEY"] = "12345678"
 
 
 db = Database()
+db.connect()
 
 
 def mat_print(mat):
@@ -18,30 +20,41 @@ def home():
     return render_template("index.html")
 
 
-@app.route("/administrator")
-def administrator():
-    return render_template("administrator.html")
-
-
 @app.route("/homepage")
 def homepage():
-    return "<h1>this is homepage</h1>"
+    if 'username' in session:
+        return "<h1>this is homepage</h1>"
+    return redirect(url_for('login'))
 
 
-@app.route("/login", methods=["POST"])
-def login():
-    value = request.form.get('value')
-    return render_template('login.html', value=value)
+# @app.route("/login", methods=["GET", "POST"])
+# def login():
+#     user = request.form['username']
+#     password = request.form['password']
+    
+#     if user == username and check_password_hash(hashed_password, password):
+#         flash('Login successful!', 'success')
+#         return redirect(url_for('index'))
+#     else:
+#         flash('Invalid username or password', 'danger')
+#     return render_template('login.html')
+
+# @app.route("login/check", methods=["POST"])
 
 
 @app.route('/view/<table_name>', methods=["POST", "GET"])
 def view_table(table_name):
-    columns = db.exec(f"DESCRIBE {table_name}")
-    first_columns = []
-    for thing in columns:
-        first_columns.append(thing[0])
+    # if 'username' in session:
+        # Use a parameterized query to describe the table
+    columns = db.fetch_data("DESCRIBE `%s`" % table_name)
+    first_columns = [thing[0] for thing in columns]
+
+    # Fetch all rows from the table
+    rows = db.fetch_data("SELECT * FROM `%s`" % table_name)
+
     return render_template('view_table.html', 
-                           table_name=table_name, 
-                           rows=db.exec(f"SELECT * FROM {table_name}"), 
-                           first_columns=first_columns
-                           )
+                            table_name=table_name, 
+                            rows=rows, 
+                            first_columns=first_columns)
+    
+    return redirect(url_for('login'))

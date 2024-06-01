@@ -1,3 +1,4 @@
 # Add your project dependencies here
 Flask
 pymysql
+flask-login

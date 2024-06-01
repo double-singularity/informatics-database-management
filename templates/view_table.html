@@ -1,31 +1,28 @@
-{% extends 'layout.html' %} 
-
-
-{% block title %} view {{ table_name }} {% endblock %}
-
-
-{% block link %}
-      rel="stylesheet"
-      href="{{url_for('static',filename='css/style.css')}}"
-{% endblock %}
-
-
-{% block body %}
-
-<table style="width:100%">
-    <tr>
-    {% for item in first_columns %}
-        <th>{{ item }}</th>
-    {% endfor %}
-    </tr>
-    {% for data in rows %}
-        <tr>
-            {% for thing in data %}
-                <td>{{ thing }}</td>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>View Table {{ table_name }}</title>
+</head>
+<body>
+    <h1>Table: {{ table_name }}</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                {% for column in first_columns %}
+                    <th>{{ column }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in rows %}
+                <tr>
+                    {% for cell in row %}
+                        <td>{{ cell }}</td>
+                    {% endfor %}
+                </tr>
             {% endfor %}
-        </tr>
-    {% endfor %}
-</table> 
-
-{% endblock %}
-
+        </tbody>
+    </table>
+</body>
+</html>
