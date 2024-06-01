@@ -13,11 +13,6 @@ db = Database()
 db.connect()
 
 
-def mat_print(mat):
-    for thing in mat:
-        print(thing)
-
-
 @app.route("/", methods=["POST", "GET"])
 def home():
     return render_template("index.html")
@@ -56,6 +51,8 @@ def login():
 
                 if user and check_password_hash(user[0]['password'], password):
                     session['username'] = username
+                    if value == "admin":
+                        session['admin'] = username
                     return redirect(url_for('dashboard'))
     
                 flash('Invalid credentials, please try again.')
@@ -78,6 +75,7 @@ def dashboard():
     if value not in ['Admin', 'Mahasiswa']:
         return redirect(url_for('home'))
 
+    table_name = value
     value = value.lower()
 
     # Perform database operations based on the table_name
@@ -88,12 +86,12 @@ def dashboard():
     finally:
         db.disconnect()
     
-    return render_template('dashboard.html', username=username, table_name=value, data=data)
+    return render_template('dashboard.html', username=username, table_name=table_name, data=data)
 
 
 @app.route('/view/<table_name>', methods=["POST", "GET"])
 def view_table(table_name):
-    if 'username' in session:  # Check if user is logged in
+    if 'admin' in session:  # Check if user is logged in
         try:
             # Connect to the database
             db.connect()

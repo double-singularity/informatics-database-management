@@ -1,16 +1,42 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Dashboard</title>
-</head>
-<body>
-    <h1>Welcome, {{ username }}</h1>
-    <p>You are logged in as: {{ table_name }}</p>
-    <h2>Data:</h2>
-    <ul>
-        {% for item in data %}
-        <li>{{ item }}</li>
-        {% endfor %}
-    </ul>
+{% extends 'layout.html' %} 
+
+{% block title %}Dashboard{% endblock %}
+
+{% block link %}
+
+rel="stylesheet"
+href="{{url_for('static',filename='css/board.css')}}"
+
+{% endblock %}
+
+
+{% block body %}
+    <div class="notion-container">
+        <div class="notion-sidebar">
+            <h3 class="notion-name">{{ username }}</h3>
+            <ul>
+                <li>Home</li>
+                <li>Projects</li>
+                <li>Tasks</li>
+                <li>Notes</li>
+                <li>Log</li>
+            </ul>
+        </div>
+        <div class="notion-content">
+            <header class="notion-header">
+                <h1>{{ table_name }} Dashboard</h1>
+            </header>
+            <main class="notion-main">
+                <section class="notion-section">
+                    <h2>Section Title</h2>
+                    <p>Some content goes here. This is a paragraph styled like Notion.</p>
+                    <div class="notion-block">
+                        <p>This is a block element with some content.</p>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
 </body>
-</html>
+{% endblock %}
+
