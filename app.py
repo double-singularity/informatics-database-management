@@ -74,8 +74,11 @@ def dashboard():
     username = session.get('username', 'Guest')
     value = session.get('value', 'Guest')
 
+
     if value not in ['Admin', 'Mahasiswa']:
         return redirect(url_for('home'))
+
+    value = value.lower()
 
     # Perform database operations based on the table_name
     db.connect()
@@ -108,4 +111,4 @@ def view_table(table_name):
 # page not found
 @app.errorhandler(404)
 def page_not_found(e):
-    return render_template('404.html', message="404 Page Not Found"), 404
+    return render_template('404.html', message=e), 404
