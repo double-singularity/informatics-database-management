@@ -52,4 +52,3 @@ class Database:
             print(f"Error fetching data: {e}")
             return []
 
-

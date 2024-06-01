@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+</head>
+<body>
+    <h1>Welcome, {{ username }}</h1>
+    <p>You are logged in as: {{ table_name }}</p>
+    <h2>Data:</h2>
+    <ul>
+        {% for item in data %}
+        <li>{{ item }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

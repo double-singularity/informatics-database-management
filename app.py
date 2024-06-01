@@ -23,11 +23,15 @@ def home():
     return render_template("index.html")
 
 
-@app.route("/homepage")
-def homepage():
-    if 'username' in session:
-        return "<h1>welcome</h1>"
-    return redirect(url_for('login'))
+@app.route('/set_value', methods=['POST'])
+def set_value():
+    data = request.get_json()
+    value = data.get('value')
+    if value in ['Admin', 'Mahasiswa']:
+        session['value'] = value
+        return '', 200
+    else:
+        return '', 400
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -41,21 +45,18 @@ def login():
         password = request.form.get('password')
 
         value = value.lower()
-        if value == "mahasiswa":
-            holder = "name"
-        elif value == "admin":
-            holder
 
         if username and password:
             db.connect()
             try:
-                query = f"SELECT * FROM {value} WHERE {holder} = %s"
+                query = f"SELECT * FROM {value} WHERE username = %s"
                 user = db.fetch_data(query, (username,))
 
-                for i in range(len(user)):
-                    if user and check_password_hash(user[i]['password'], password):
-                        session['username'] = username
-                        return redirect(url_for('dashboard'))
+                print("check: ", check_password_hash(user[0]['password'], password))
+
+                if user and check_password_hash(user[0]['password'], password):
+                    session['username'] = username
+                    return redirect(url_for('dashboard'))
     
                 flash('Invalid credentials, please try again.')
             finally:
@@ -63,6 +64,28 @@ def login():
             return redirect(url_for('login'))
 
     return render_template('login.html', value=value)
+
+
+@app.route('/dashboard')
+def dashboard():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
+    username = session.get('username', 'Guest')
+    value = session.get('value', 'Guest')
+
+    if value not in ['Admin', 'Mahasiswa']:
+        return redirect(url_for('home'))
+
+    # Perform database operations based on the table_name
+    db.connect()
+    try:
+        query = f"SELECT * FROM {value}"  # Adjust the query as per your requirement
+        data = db.fetch_data(query)
+    finally:
+        db.disconnect()
+    
+    return render_template('dashboard.html', username=username, table_name=value, data=data)
 
 
 @app.route('/view/<table_name>', methods=["POST", "GET"])
