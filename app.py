@@ -6,7 +6,7 @@ from db import Database
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "12345678"
-app.permanent_session_lifetime = timedelta(minutes=5)
+app.permanent_session_lifetime = timedelta(minutes=10)
 
 
 db = Database()
@@ -32,19 +32,37 @@ def homepage():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    value = request.form.get("value", "")
-    return render_template('login.html', value=value)
-    # user = request.form['username']
-    # password = request.form['password']
-    
-    # if user == username and check_password_hash(hashed_password, password):
-    #     flash('Login successful!', 'success')
-    #     return redirect(url_for('index'))
-    # else:
-    #     flash('Invalid username or password', 'danger')
-    # return render_template('login.html')
+    value = session.get('value', None)
+    if value not in ['Admin', 'Mahasiswa']:
+        return redirect(url_for('home'))
 
-# @app.route("login/check", methods=["POST"])
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+
+        value = value.lower()
+        if value == "mahasiswa":
+            holder = "name"
+        elif value == "admin":
+            holder
+
+        if username and password:
+            db.connect()
+            try:
+                query = f"SELECT * FROM {value} WHERE {holder} = %s"
+                user = db.fetch_data(query, (username,))
+
+                for i in range(len(user)):
+                    if user and check_password_hash(user[i]['password'], password):
+                        session['username'] = username
+                        return redirect(url_for('dashboard'))
+    
+                flash('Invalid credentials, please try again.')
+            finally:
+                db.disconnect()
+            return redirect(url_for('login'))
+
+    return render_template('login.html', value=value)
 
 
 @app.route('/view/<table_name>', methods=["POST", "GET"])

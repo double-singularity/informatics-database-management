@@ -41,12 +41,15 @@ class Database:
             print(f"Error executing query: {e}")
             self.connection.rollback()
 
-    def fetch_data(self, query):
+    def fetch_data(self, query, values=None):
         try:
             with self.connection.cursor() as cursor:
-                cursor.execute(query)
+                cursor.execute(query, values)
                 result = cursor.fetchall()
-                return result
+                column_names = [desc[0] for desc in cursor.description]
+                return [dict(zip(column_names, row)) for row in result]
         except Exception as e:
             print(f"Error fetching data: {e}")
+            return []
+
 
