@@ -1,9 +1,12 @@
 from flask import Flask, render_template, request, session, redirect, url_for, flash
 from werkzeug.security import check_password_hash, generate_password_hash
+from datetime import timedelta
 from db import Database
+
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "12345678"
+app.permanent_session_lifetime = timedelta(minutes=5)
 
 
 db = Database()
@@ -23,21 +26,23 @@ def home():
 @app.route("/homepage")
 def homepage():
     if 'username' in session:
-        return "<h1>this is homepage</h1>"
+        return "<h1>welcome</h1>"
     return redirect(url_for('login'))
 
 
-# @app.route("/login", methods=["GET", "POST"])
-# def login():
-#     user = request.form['username']
-#     password = request.form['password']
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    value = request.form.get("value", "")
+    return render_template('login.html', value=value)
+    # user = request.form['username']
+    # password = request.form['password']
     
-#     if user == username and check_password_hash(hashed_password, password):
-#         flash('Login successful!', 'success')
-#         return redirect(url_for('index'))
-#     else:
-#         flash('Invalid username or password', 'danger')
-#     return render_template('login.html')
+    # if user == username and check_password_hash(hashed_password, password):
+    #     flash('Login successful!', 'success')
+    #     return redirect(url_for('index'))
+    # else:
+    #     flash('Invalid username or password', 'danger')
+    # return render_template('login.html')
 
 # @app.route("login/check", methods=["POST"])
 
