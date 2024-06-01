@@ -2,10 +2,9 @@
 
 {% block list %}
 <li><button onclick="window.location.href='/'">Home</button></li>
-<li><button onclick="window.location.href='/view'">Projects</button></li>
-<li><button onclick="window.location.href='/view'">Tasks</button></li>
-<li><button onclick="window.location.href='/view'">Notes</button></li>
-<li><button onclick="window.location.href='/view'">Logs</button></li>
+{% for bar in sidebar_list %}
+<li><button onclick="window.location.href='/{{ bar[0] }}'">{{ bar[1] }}</button></li>
+{% endfor %}
 {% endblock %}
 
 {% block header %}
@@ -15,9 +14,9 @@
 {% block section %}
 <h2>Section Title</h2>
 <p>Some content goes here. This is a paragraph styled like Notion.</p>
+<div class="notion-block">
+    <p>This is a block element with some content.</p>
+</div>
 {% endblock %}
 
-{% block block %}
-<p>This is a block element with some content.</p>
-{% endblock %}
 

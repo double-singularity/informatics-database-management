@@ -47,6 +47,8 @@ def login():
                 query = f"SELECT * FROM {value} WHERE username = %s"
                 user = db.fetch_data(query, (username,))
 
+                print(user)
+
                 print("check: ", check_password_hash(user[0]['password'], password))
 
                 if user and check_password_hash(user[0]['password'], password):
@@ -76,22 +78,30 @@ def dashboard():
         return redirect(url_for('home'))
 
     table_name = value
-    value = value.lower()
 
-    # Perform database operations based on the table_name
-    db.connect()
-    try:
-        query = f"SELECT * FROM {value}"  # Adjust the query as per your requirement
-        data = db.fetch_data(query)
-    finally:
-        db.disconnect()
+    sidebar_list = []
     
-    return render_template('dashboard.html', username=username, table_name=table_name, data=data)
+    if table_name.lower() == 'admin':
+        sidebar_list = ["mahasiswa", "biodata", "nilai", "jadwal", "matakuliah", "log"]
+    elif table_name.lower() == 'mahasiswa':
+        sidebar_list = ["biodata", "nilai", "jadwal", "matakuliah"]
+
+    sidebar_list = [(sidebar_list[i], sidebar_list[i].title()) for i in range(len(sidebar_list))]
+
+    session['sidebar'] = sidebar_list
+    
+    return render_template('dashboard.html', username=username, table_name=table_name, sidebar_list=sidebar_list)
+
+@app.route('/mahasiswa')
+def view_students():
+    db.connect()
+    mahasiswa = db.fetch_data("SELECT * FROM mahasiswa")
+    db.disconnect()
+    return render_template('view_mahasiswa.html', mahasiswa=mahasiswa)
 
 @app.route('/view', methods=["POST", "GET"])
 def view():
     return render_template('view.html', entries=["admin", "biodata", "mahasiswa", "nilai_mahasiswa", "orang_tua", "users"])
-
 
 @app.route('/view/<table_name>', methods=["POST", "GET"])
 def view_table(table_name):
@@ -121,6 +131,25 @@ def view_table(table_name):
     else:
         # Redirect to login page if user is not logged in
         return redirect(url_for('login'))
+    
+
+@app.route('/create_student', methods=['GET', 'POST'])
+def create_student():
+    sidebar_list = session.get('sidebar')
+    if request.method == 'POST':
+        name = request.form['name']
+        email = request.form['email']
+        try:
+            db.connect()
+            password = generate_password_hash(name.replace(" ", "") + "123")
+            db.execute_query("INSERT INTO mahasiswa (username, email, password) VALUES (%s, %s, %s)", (name, email, password))
+        except Exception as e:
+            print(f"Error: {e}")
+        finally:
+            db.disconnect()
+        return redirect('/mahasiswa')
+    return render_template('create_student.html', sidebar_list=sidebar_list)
+
 
 # page not found
 @app.errorhandler(404)

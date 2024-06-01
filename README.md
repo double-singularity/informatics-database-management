@@ -1,6 +1,7 @@
 # sistem-informasi-mahasiswa
 
 mahasiswa:
+(contoh)
 username = "Restu Dermawan"
 password = "RestuDermawan123"
 
