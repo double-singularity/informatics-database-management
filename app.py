@@ -63,7 +63,7 @@ def login():
     return render_template('login.html', value=value)
 
 
-@app.route('/dashboard')
+@app.route('/dashboard', methods=["GET", "POST"])
 def dashboard():
     if 'username' not in session:
         return redirect(url_for('login'))
@@ -87,6 +87,10 @@ def dashboard():
         db.disconnect()
     
     return render_template('dashboard.html', username=username, table_name=table_name, data=data)
+
+@app.route('/view', methods=["POST", "GET"])
+def view():
+    return render_template('view.html', entries=["admin", "biodata", "mahasiswa", "nilai_mahasiswa", "orang_tua", "users"])
 
 
 @app.route('/view/<table_name>', methods=["POST", "GET"])

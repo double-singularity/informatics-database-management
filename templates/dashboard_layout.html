@@ -1,0 +1,34 @@
+{% extends 'layout.html' %} 
+
+{% block title %}Dashboard{% endblock %}
+
+{% block link %}
+
+rel="stylesheet"
+href="{{url_for('static',filename='css/board.css')}}"
+
+{% endblock %}
+
+
+{% block body %}
+    <div class="notion-container">
+        <div class="notion-sidebar">
+            <h3 class="notion-name">{{ username }}</h3>
+            <ul>
+                {% block list %}{% endblock %}
+            </ul>
+        </div>
+        <div class="notion-content">
+            <header class="notion-header">
+                {% block header %}{% endblock %}
+            </header>
+            <main class="notion-main">
+                <section class="notion-section">
+                    {% block section %}{% endblock %}
+                </section>
+            </main>
+        </div>
+    </div>
+</body>
+{% endblock %}
+

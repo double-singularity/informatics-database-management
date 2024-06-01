@@ -1,0 +1,25 @@
+{% extends 'dashboard_layout.html' %}
+
+{% block list %}
+                <li><button onclick="window.location.href='/'">Home</button></li>
+                <li><button onclick="window.location.href='/view'">Projects</button></li>
+                <li><button onclick="window.location.href='/view'">Tasks</button></li>
+                <li><button onclick="window.location.href='/view'">Notes</button></li>
+                <li><button onclick="window.location.href='/view'">Logs</button></li>
+{% endblock %}
+
+{% block header %}
+<h1>Entries</h1>
+{% endblock %}
+
+{% block section %}
+    {% for entry in entries %}
+        <div class="notion-block">
+            <h2>{{ entry.title }}</h2>
+            <p>{{ entry.content }}</p>
+            <button onclick="window.location.href='/edit/{{ entry.id }}'">Edit</button>
+            <button onclick="window.location.href='/delete/{{ entry.id }}'">Delete</button>
+        </div>
+    {% endfor %}
+{% endblock %}
+
