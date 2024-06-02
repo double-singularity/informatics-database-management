@@ -97,7 +97,7 @@ def view_students():
     db.connect()
     mahasiswa = db.fetch_data("SELECT * FROM mahasiswa")
     db.disconnect()
-    return render_template('view_mahasiswa.html', mahasiswa=mahasiswa)
+    return render_template('mahasiswa.html', mahasiswa=mahasiswa)
 
 @app.route('/view', methods=["POST", "GET"])
 def view():
