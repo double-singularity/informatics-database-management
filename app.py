@@ -151,6 +151,20 @@ def create_student():
     return render_template('create_student.html', sidebar_list=sidebar_list)
 
 
+@app.route('/edit_mahasiswa/<int:id>', methods=['GET', 'POST'])
+def edit_student(id):
+    db.connect()
+    if request.method == 'POST':
+        name = request.form['name']
+        email = request.form['email']
+        db.execute_query("UPDATE mahasiswa SET username=%s, email=%s WHERE nim=%s", (name, email, id))
+        db.disconnect()
+        return redirect('/mahasiswa')
+    student = db.fetch_data("SELECT * FROM mahasiswa WHERE nim=%s", (id,))
+    db.disconnect()
+    return render_template('edit_mahasiswa.html', student=student[0])
+
+
 # page not found
 @app.errorhandler(404)
 def page_not_found(e):
