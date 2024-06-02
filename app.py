@@ -80,7 +80,7 @@ def dashboard():
     table_name = value
 
     sidebar_list = []
-    
+
     if table_name.lower() == 'admin':
         sidebar_list = ["mahasiswa", "biodata", "nilai", "jadwal", "matakuliah", "log"]
     elif table_name.lower() == 'mahasiswa':
@@ -92,16 +92,31 @@ def dashboard():
     
     return render_template('dashboard.html', username=username, table_name=table_name, sidebar_list=sidebar_list)
 
+
 @app.route('/mahasiswa')
-def view_students():
+def mahasiswa():
     db.connect()
     mahasiswa = db.fetch_data("SELECT * FROM mahasiswa")
     db.disconnect()
-    return render_template('mahasiswa.html', mahasiswa=mahasiswa)
+
+    table_name = session.get('value', None)
+    
+    if table_name.lower() == 'admin':
+        sidebar_list = ["mahasiswa", "biodata", "nilai", "jadwal", "matakuliah", "log"]
+    elif table_name.lower() == 'mahasiswa':
+        sidebar_list = ["biodata", "nilai", "jadwal", "matakuliah"]
+
+    sidebar_list = [(sidebar_list[i], sidebar_list[i].title()) for i in range(len(sidebar_list))]
+
+    print(sidebar_list)
+
+    return render_template('mahasiswa.html', mahasiswa=mahasiswa, sidebar_list=sidebar_list)
+
 
 @app.route('/view', methods=["POST", "GET"])
 def view():
     return render_template('view.html', entries=["admin", "biodata", "mahasiswa", "nilai_mahasiswa", "orang_tua", "users"])
+
 
 @app.route('/view/<table_name>', methods=["POST", "GET"])
 def view_table(table_name):
@@ -169,6 +184,7 @@ def edit_student(id):
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html', message=e), 404
+
 
 if __name__ == '__main__':
     app.run(port=1337, debug=True)
