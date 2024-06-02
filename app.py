@@ -13,6 +13,17 @@ db = Database()
 db.connect()
 
 
+def get_sidebar_list(table_name):
+    if table_name.lower() == 'admin':
+        sidebar_list = ["mahasiswa", "biodata", "nilai", "jadwal", "matakuliah", "log"]
+    elif table_name.lower() == 'mahasiswa':
+        sidebar_list = ["biodata", "nilai", "jadwal", "matakuliah"]
+
+    sidebar_list = [(sidebar_list[i], sidebar_list[i].title()) for i in range(len(sidebar_list))]
+
+    return sidebar_list
+
+
 @app.route("/", methods=["POST", "GET"])
 def home():
     return render_template("index.html")
@@ -78,16 +89,7 @@ def dashboard():
         return redirect(url_for('home'))
 
     table_name = value
-
-    sidebar_list = []
-
-    if table_name.lower() == 'admin':
-        sidebar_list = ["mahasiswa", "biodata", "nilai", "jadwal", "matakuliah", "log"]
-    elif table_name.lower() == 'mahasiswa':
-        sidebar_list = ["biodata", "nilai", "jadwal", "matakuliah"]
-
-    sidebar_list = [(sidebar_list[i], sidebar_list[i].title()) for i in range(len(sidebar_list))]
-
+    sidebar_list = get_sidebar_list(session.get('value', None))
     session['sidebar'] = sidebar_list
     
     return render_template('dashboard.html', username=username, table_name=table_name, sidebar_list=sidebar_list)
@@ -99,16 +101,7 @@ def mahasiswa():
     mahasiswa = db.fetch_data("SELECT * FROM mahasiswa")
     db.disconnect()
 
-    table_name = session.get('value', None)
-    
-    if table_name.lower() == 'admin':
-        sidebar_list = ["mahasiswa", "biodata", "nilai", "jadwal", "matakuliah", "log"]
-    elif table_name.lower() == 'mahasiswa':
-        sidebar_list = ["biodata", "nilai", "jadwal", "matakuliah"]
-
-    sidebar_list = [(sidebar_list[i], sidebar_list[i].title()) for i in range(len(sidebar_list))]
-
-    print(sidebar_list)
+    sidebar_list = get_sidebar_list(session.get('value', None))
 
     return render_template('mahasiswa.html', mahasiswa=mahasiswa, sidebar_list=sidebar_list)
 
