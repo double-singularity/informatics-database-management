@@ -107,10 +107,26 @@ def mahasiswa():
 
 @app.route('/biodata')
 def biodata():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    
     db.connect()
-    biodata = db.fetch_data('''SELECT m.username, b.asal_sekolah, b.status_kelulusan, b.Gender 
-                            FROM biodata b, mahasiswa m 
-                            WHERE b.nim_mahasiswa = m.nim;''')
+
+    value = session.get('value', 'Guest')
+
+    if value not in ['Admin', 'Mahasiswa']:
+        return redirect(url_for('home'))
+    
+    if value == 'Admin':
+        biodata = db.fetch_data('''SELECT m.username, b.asal_sekolah, b.status_kelulusan, b.Gender 
+                                FROM biodata b, mahasiswa m 
+                                WHERE b.nim_mahasiswa = m.nim;''')
+    elif value == 'Mahasiswa':
+        biodata = db.fetch_data(f'''SELECT m.username, b.asal_sekolah, b.status_kelulusan, b.Gender 
+                                FROM biodata b, mahasiswa m 
+                                WHERE b.nim_mahasiswa = m.nim
+                                AND m.username = "{session.get('username')}";''')
+        
     db.disconnect()
 
     print(biodata)
