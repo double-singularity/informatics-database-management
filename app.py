@@ -6,7 +6,7 @@ from db import Database
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "12345678"
-app.permanent_session_lifetime = timedelta(minutes=10)
+app.permanent_session_lifetime = timedelta(minutes=15)
 
 
 db = Database()
@@ -15,9 +15,9 @@ db.connect()
 
 def get_sidebar_list(table_name):
     if table_name.lower() == 'admin':
-        sidebar_list = ["mahasiswa", "biodata", "nilai", "jadwal", "matakuliah", "log"]
+        sidebar_list = ["mahasiswa", "biodata", "log"]
     elif table_name.lower() == 'mahasiswa':
-        sidebar_list = ["biodata", "nilai", "jadwal", "matakuliah"]
+        sidebar_list = ["biodata", "nilai", "jadwal"]
 
     sidebar_list = [(sidebar_list[i], sidebar_list[i].title()) for i in range(len(sidebar_list))]
 
@@ -101,6 +101,7 @@ def mahasiswa():
 
     return render_template('mahasiswa.html', mahasiswa=mahasiswa, sidebar_list=sidebar_list)
 
+
 @app.route('/biodata')
 def biodata():
     if 'username' not in session:
@@ -131,41 +132,6 @@ def biodata():
 
     return render_template('biodata.html', biodata=biodata, sidebar_list=sidebar_list)
 
-
-@app.route('/view', methods=["POST", "GET"])
-def view():
-    return render_template('view.html', entries=["admin", "biodata", "mahasiswa", "nilai_mahasiswa", "orang_tua", "users"])
-
-
-@app.route('/view/<table_name>', methods=["POST", "GET"])
-def view_table(table_name):
-    if 'admin' in session:  # Check if user is logged in
-        try:
-            # Connect to the database
-            db.connect()
-
-            # Use safe string formatting to include table name in the query
-            columns_query = f"DESCRIBE `{table_name}`"
-            columns = db.fetch_data(columns_query)
-            first_columns = [column['Field'] for column in columns]
-
-            rows_query = f"SELECT * FROM `{table_name}`"
-            rows = db.fetch_data(rows_query)
-        except Exception as e:
-            # Handle database query errors gracefully
-            error_message = f"An error occurred while fetching data: {e}"
-            return render_template('error.html', error_message=error_message)
-        finally:
-            db.disconnect()
-
-        return render_template('view_table.html', 
-                               table_name=table_name, 
-                               rows=rows, 
-                               first_columns=first_columns)
-    else:
-        # Redirect to login page if user is not logged in
-        return redirect(url_for('login'))
-    
 
 @app.route('/create_student', methods=['GET', 'POST'])
 def create_student():
@@ -201,7 +167,6 @@ def edit_student(id):
 
 @app.route('/delete_mahasiswa/<int:id>', methods=['POST'])
 def delete_mahasiswa(id):
-    print(f"id=")
     try:
         db.connect()
         db.execute_query("DELETE FROM biodata WHERE nim_mahasiswa=%s", (id,))
@@ -215,6 +180,25 @@ def delete_mahasiswa(id):
     return redirect('/mahasiswa')
 
 
+@app.route('/log', methods=['GET', 'POST'])
+def log():
+    db.connect()
+    data = db.fetch_data("SELECT * FROM mahasiswa_log")
+    db.disconnect()
+
+    print(data)
+
+    texts = []
+    for things in data:
+        texts += [f"email changed from {things['old_email']} to {things['new_email']} changed at {things['changed_at']}"]
+
+    print(texts)
+
+    sidebar_list = get_sidebar_list(session.get('value', None))
+
+    return render_template('log.html', texts=texts, sidebar_list=sidebar_list)
+
+
 # page not found
 @app.errorhandler(404)
 def page_not_found(e):
@@ -223,3 +207,4 @@ def page_not_found(e):
 
 if __name__ == '__main__':
     app.run(port=1337, debug=True)
+
