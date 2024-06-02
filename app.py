@@ -58,17 +58,13 @@ def login():
                 query = f"SELECT * FROM {value} WHERE username = %s"
                 user = db.fetch_data(query, (username,))
 
-                print(user)
-
-                print("check: ", check_password_hash(user[0]['password'], password))
-
                 if user and check_password_hash(user[0]['password'], password):
                     session['username'] = username
                     if value == "admin":
                         session['admin'] = username
                     return redirect(url_for('dashboard'))
     
-                flash('Invalid credentials, please try again.')
+                flash('Invalid credentials, please try again')
             finally:
                 db.disconnect()
             return redirect(url_for('login'))
