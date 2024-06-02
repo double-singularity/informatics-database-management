@@ -11,6 +11,13 @@
 
 {% block header %}
 <h1>Mahasiswa</h1>
+<script>
+    function confirmDelete(studentId) {
+        if (confirm("Are you sure you want to delete this student?")) {
+            document.getElementById('delete-form-' + studentId).submit();
+        }
+    }
+</script>
 {% endblock %}
 
 
@@ -22,8 +29,12 @@
 <div class="notion-block">
     <h2>{{ student.username }}</h2>
     <p>{{ student.email }}</p>
+    
     <button onclick="window.location.href='/edit_mahasiswa/{{ student.nim }}'">Edit</button>
-    <button onclick="window.location.href='/delete_mahasiswa/{{ student.nim }}'">Delete</button>
+    <form id="delete-form-{{ student.nim }}" action="{{ url_for('delete_mahasiswa', id=student.nim) }}" method="POST" style="display:inline;">
+        <button type="button" onclick="confirmDelete('{{ student.nim }}')">Delete</button>
+    </form>
+    
 </div>
 {% endfor %}
 {% endblock %}

@@ -3,3 +3,7 @@ Flask
 pymysql
 flask-login
 
+<button onclick="window.location.href='/delete_mahasiswa/{{ student.nim }}'">Delete</button>
+<form id="delete-form-{{ student.nim }}" action="{{ url_for('delete_mahasiswa', id=student.nim) }}" method="POST" style="display:inline;">
+        <button type="button" onclick="confirmDelete('{{ student.nim }}')">Delete</button>
+    </form>

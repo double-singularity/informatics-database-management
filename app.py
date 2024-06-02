@@ -105,6 +105,20 @@ def mahasiswa():
 
     return render_template('mahasiswa.html', mahasiswa=mahasiswa, sidebar_list=sidebar_list)
 
+@app.route('/biodata')
+def biodata():
+    db.connect()
+    biodata = db.fetch_data('''SELECT m.username, b.asal_sekolah, b.status_kelulusan, b.Gender 
+                            FROM biodata b, mahasiswa m 
+                            WHERE b.nim_mahasiswa = m.nim;''')
+    db.disconnect()
+
+    print(biodata)
+
+    sidebar_list = get_sidebar_list(session.get('value', None))
+
+    return render_template('biodata.html', biodata=biodata, sidebar_list=sidebar_list)
+
 
 @app.route('/view', methods=["POST", "GET"])
 def view():
@@ -171,6 +185,22 @@ def edit_student(id):
     student = db.fetch_data("SELECT * FROM mahasiswa WHERE nim=%s", (id,))
     db.disconnect()
     return render_template('edit_mahasiswa.html', student=student[0])
+
+
+@app.route('/delete_mahasiswa/<int:id>', methods=['POST'])
+def delete_mahasiswa(id):
+    print(f"id=")
+    try:
+        db.connect()
+        db.execute_query("DELETE FROM biodata WHERE nim_mahasiswa=%s", (id,))
+        db.execute_query("DELETE FROM orang_tua WHERE nim_mahasiswa=%s", (id,))
+        db.execute_query("DELETE FROM mahasiswa WHERE nim=%s", (id,))
+        flash('Student deleted successfully.')
+    except Exception as e:
+        flash(f'Error deleting student: {e}')
+    finally:
+        db.disconnect()
+    return redirect('/mahasiswa')
 
 
 # page not found
