@@ -99,6 +99,16 @@ def view_students():
     db.disconnect()
     return render_template('mahasiswa.html', mahasiswa=mahasiswa)
 
+@app.route('/biodata')
+def biodata():
+    db.connect()
+    mahasiswa = db.fetch_data("SELECT * FROM biodata")
+    db.disconnect()
+    return render_template('biodata.html', biodata=biodata)
+
+
+
+
 @app.route('/view', methods=["POST", "GET"])
 def view():
     return render_template('view.html', entries=["admin", "biodata", "mahasiswa", "nilai_mahasiswa", "orang_tua", "users"])

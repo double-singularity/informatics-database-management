@@ -1,7 +1,7 @@
 {% extends 'dashboard_layout.html' %}
 
 {% block list %}
-<li><button onclick="window.location.href='/'">Home</button></li>
+<li><button onclick="window.location.href='/dashboard'">Home</button></li>
 {% for bar in sidebar_list %}
 <li><button onclick="window.location.href='/{{ bar[0] }}'">{{ bar[1] }}</button></li>
 {% endfor %}

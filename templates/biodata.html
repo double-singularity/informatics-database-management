@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Students</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/board.css') }}">
+</head>
+<body>
+    <div class="notion-container">
+        <div class="notion-sidebar">
+            <ul>
+                <li><button onclick="window.location.href='/'">Home</button></li>
+                <li><button onclick="window.location.href='/students'">Students</button></li>
+                <li><button onclick="window.location.href='/courses'">Courses</button></li>
+                <li><button onclick="window.location.href='/enrollments'">Enrollments</button></li>
+            </ul>
+        </div>
+        <div class="notion-content">
+            <header class="notion-header">
+                <h1>Students</h1>
+            </header>
+            <main class="notion-main">
+                <section class="notion-section">
+                    <div class="notion-block">
+                        <button onclick="window.location.href='/create_student'">Create New Student</button>
+                    </div>
+                    {% for biodata in bio %}
+                    <div class="notion-block">
+                        <h2>{{ student.username }}</h2>
+                        <p>{{ student.email }}</p>
+                        <button onclick="window.location.href='/edit_mahasiswa/{{ student.nim }}'">Edit</button>
+                        <button onclick="window.location.href='/delete_mahasiswa/{{ student.nim }}'">Delete</button>
+                    </div>
+                    {% endfor %}
+                </section>
+            </main>
+        </div>
+    </div>
+</body>
+</html>
