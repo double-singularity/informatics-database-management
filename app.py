@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, session, redirect, url_for, flash
+from flask import Flask, render_template, request, session, redirect, url_for, flash, jsonify
 from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import timedelta
 from db import Database
@@ -100,6 +100,38 @@ def mahasiswa():
     sidebar_list = get_sidebar_list(session.get('value', None))
 
     return render_template('mahasiswa.html', mahasiswa=mahasiswa, sidebar_list=sidebar_list)
+
+
+@app.route('/chart-data')
+def chart_data():
+    data = {
+        "categories": [i+1 for i in range(12)],
+        "values": session.get("transcript", [])
+    }
+    return jsonify(data)
+
+
+@app.route('/nilai')
+def nilai():
+    db.connect()
+
+    username = session.get('username', None)
+
+    nim = db.fetch_data(f"SELECT nim FROM mahasiswa WHERE username = '{username}'")
+  
+    transcript = db.fetch_data(f"""
+                                SELECT * FROM transcript_nilai 
+                                WHERE mahasiswa_nim = '{nim[0]['nim']}'
+                                ORDER BY semester ASC
+                                """)
+
+    db.disconnect()
+
+    session['transcript'] = [transcript[i]['nilai'] for i in range(len(transcript))]
+
+    sidebar_list = get_sidebar_list(session.get('value', None))
+
+    return render_template('nilai.html', sidebar_list=sidebar_list)
 
 
 @app.route('/biodata')

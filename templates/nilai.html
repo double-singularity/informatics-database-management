@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+{% extends 'dashboard_layout.html' %}
+
+{% block head %}
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+<!-- ApexCharts -->
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<!-- Bootstrap JS and dependencies -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<!-- ApexCharts Script -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    fetch('/chart-data')
+        .then(response => response.json())
+        .then(data => {
+            var options = {
+                chart: {
+                    height: 350,
+                    type: "line",
+                    zoom: {
+                        enabled: false
+                    },
+                },
+                dataLabels: {
+                    enabled: false
+                },
+                stroke: {
+                    width: 5,
+                    curve: "straight"
+                },
+                series: [{
+                    name: "Session Duration",
+                    data: data.values
+                }],
+                markers: {
+                    size: 0 // Hide dots
+                },
+                xaxis: {
+                    categories: data.categories,
+                },
+                yaxis: {
+                    min: 0,
+                    max: 4
+                },
+                tooltip: {
+                    y: {
+                        title: {
+                            formatter: function(val) {
+                                return val + " (mins)"
+                            }
+                        }
+                    }
+                },
+                grid: {
+                    borderColor: "#f1f1f1",
+                }
+            }
+            var chart = new ApexCharts(
+                document.querySelector("#apexcharts-line"),
+                options
+            );
+            chart.render();
+        });
+});
+</script>
+{% endblock %}
+
+{% block list %}
+<li><button onclick="window.location.href='/dashboard'">Home</button></li>
+{% for bar in sidebar_list %}
+<li><button onclick="window.location.href='/{{ bar[0] }}'">{{ bar[1] }}</button></li>
+{% endfor %}
+{% endblock %}
+
+{% block header %}
+<h1>Nilai</h1>
+{% endblock %}
+
+{% block section %}
+
+<div class="container">
+    <h1 class="mt-5">{{ username }} IPS setiap semester</h1>
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <!-- ApexCharts Container -->
+            <div id="apexcharts-line"></div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
