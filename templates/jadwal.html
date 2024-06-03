@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+{% extends 'dashboard_layout.html' %}
+
+{% block head %}
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+<!-- ApexCharts -->
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<!-- Bootstrap JS and dependencies -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<!-- ApexCharts Script -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    fetch('/chart-data')
+        .then(response => response.json())
+        .then(data => {
+            var options = {
+                chart: {
+                    height: 350,
+                    type: "line",
+                    zoom: {
+                        enabled: false
+                    },
+                },
+                dataLabels: {
+                    enabled: false
+                },
+                stroke: {
+                    width: 5,
+                    curve: "straight"
+                },
+                series: [{
+                    name: "Session Duration",
+                    data: data.values
+                }],
+                markers: {
+                    size: 0 // Hide dots
+                },
+                xaxis: {
+                    categories: data.categories,
+                },
+                yaxis: {
+                    min: 0,
+                    max: 4
+                },
+                tooltip: {
+                    y: {
+                        title: {
+                            formatter: function(val) {
+                                return val + " (mins)"
+                            }
+                        }
+                    }
+                },
+                grid: {
+                    borderColor: "#f1f1f1",
+                }
+            }
+            var chart = new ApexCharts(
+                document.querySelector("#apexcharts-line"),
+                options
+            );
+            chart.render();
+        });
+});
+</script>
+{% endblock %}
+
+{% block list %}
+<li><button onclick="window.location.href='/dashboard'">Home</button></li>
+{% for bar in sidebar_list %}
+<li><button onclick="window.location.href='/{{ bar[0] }}'">{{ bar[1] }}</button></li>
+{% endfor %}
+{% endblock %}
+
+{% block header %}
+<h1>Nilai</h1>
+{% endblock %}
+
+{% block section %}
+<div class="container">
+    <div class="row">
+        
+            <div class="card h-100">
+                <div class="card-body">
+                    <h4 class="card-title">Calendar Jadwal</h4>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Sun</th>
+                                <th>Mon</th>
+                                <th>Tue</th>
+                                <th>Wed</th>
+                                <th>Thu</th>
+                                <th>Fri</th>
+                                <th>Sat</th>
+                            </tr>
+                        </thead>
+                        <tbody id="mini-calendar-body">
+                            <!-- Calendar days will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const miniCalendarBody = document.getElementById('mini-calendar-body');
+
+        // Example month and year
+        const currentMonth = 5; // June (zero-based index)
+        const currentYear = 2024;
+
+        const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+        const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+
+        let daysHTML = '';
+        let dayCounter = 1;
+
+        // Create calendar rows
+        for (let row = 0; row < 6; row++) {
+            daysHTML += '<tr>';
+            
+            // Create each day in the row
+            for (let col = 0; col < 7; col++) {
+                if (row === 0 && col < firstDay) {
+                    daysHTML += '<td></td>';
+                } else if (dayCounter > daysInMonth) {
+                    daysHTML += '<td></td>';
+                } else {
+                    daysHTML += `<td>${dayCounter}</td>`;
+                    dayCounter++;
+                }
+            }
+
+            daysHTML += '</tr>';
+
+            // Break the loop if all days are added
+            if (dayCounter > daysInMonth) break;
+        }
+
+        miniCalendarBody.innerHTML = daysHTML;
+    });
+</script>
+{% endblock %}
+
+
+
+
+

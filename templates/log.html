@@ -1,13 +1,23 @@
-{% extends 'layout.html' %} 
+<!DOCTYPE html>
+{% extends 'dashboard_layout.html' %}
 
-{% block link %}
-      rel="stylesheet"
-      href="{{url_for('static',filename='css/style.css')}}"
+{% block list %}
+<li><button onclick="window.location.href='/dashboard'">Home</button></li>
+{% for bar in sidebar_list %}
+<li><button onclick="window.location.href='/{{ bar[0] }}'">{{ bar[1] }}</button></li>
+{% endfor %}
 {% endblock %}
 
-{% block title %} {{ admin }} log {% endblock %}
-
-{% block body %}
-    
+{% block header %}
+<h1>Logs</h1>
 {% endblock %}
 
+{% block section %}
+
+<div style="border: 2px solid gray; padding: 5px; width: 500px; display: inline-block; border-radius: 15px;">
+    {% for text in texts %}
+      <p>{{ text }}</p>
+    {% endfor %}
+</div>
+
+{% endblock %}

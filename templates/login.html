@@ -11,6 +11,17 @@
 
 <div class="login-container">
     <h2>Login {{ value }}</h2>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        
+            {% for message in messages %}
+                <p class="red-p">{{ message }}</p>
+            {% endfor %}
+        
+        {% endif %}
+    {% endwith %}
+
     <form method="post">
         <div class="input-group">
             <label for="username">Username</label>
@@ -23,6 +34,8 @@
         <button type="submit">Login</button>
     </form>
 </div>
+
+
 
 {% endblock %}
 

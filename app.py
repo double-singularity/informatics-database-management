@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, session, redirect, url_for, flash
+from flask import Flask, render_template, request, session, redirect, url_for, flash, jsonify
 from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import timedelta
 from db import Database
@@ -6,11 +6,22 @@ from db import Database
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "12345678"
-app.permanent_session_lifetime = timedelta(minutes=10)
+app.permanent_session_lifetime = timedelta(minutes=15)
 
 
 db = Database()
 db.connect()
+
+
+def get_sidebar_list(table_name):
+    if table_name.lower() == 'admin':
+        sidebar_list = ["mahasiswa", "biodata", "log"]
+    elif table_name.lower() == 'mahasiswa':
+        sidebar_list = ["biodata", "nilai", "jadwal"]
+
+    sidebar_list = [(sidebar_list[i], sidebar_list[i].title()) for i in range(len(sidebar_list))]
+
+    return sidebar_list
 
 
 @app.route("/", methods=["POST", "GET"])
@@ -47,17 +58,13 @@ def login():
                 query = f"SELECT * FROM {value} WHERE username = %s"
                 user = db.fetch_data(query, (username,))
 
-                print(user)
-
-                print("check: ", check_password_hash(user[0]['password'], password))
-
                 if user and check_password_hash(user[0]['password'], password):
                     session['username'] = username
                     if value == "admin":
                         session['admin'] = username
                     return redirect(url_for('dashboard'))
     
-                flash('Invalid credentials, please try again.')
+                flash('Invalid credentials, please try again')
             finally:
                 db.disconnect()
             return redirect(url_for('login'))
@@ -78,27 +85,19 @@ def dashboard():
         return redirect(url_for('home'))
 
     table_name = value
-
-    sidebar_list = []
-    
-    if table_name.lower() == 'admin':
-        sidebar_list = ["mahasiswa", "biodata", "nilai", "jadwal", "matakuliah", "log"]
-    elif table_name.lower() == 'mahasiswa':
-        sidebar_list = ["biodata", "nilai", "jadwal", "matakuliah"]
-
-    sidebar_list = [(sidebar_list[i], sidebar_list[i].title()) for i in range(len(sidebar_list))]
-
+    sidebar_list = get_sidebar_list(session.get('value', None))
     session['sidebar'] = sidebar_list
     
     return render_template('dashboard.html', username=username, table_name=table_name, sidebar_list=sidebar_list)
 
+
 @app.route('/mahasiswa')
-def view_students():
+def mahasiswa():
     db.connect()
     mahasiswa = db.fetch_data("SELECT * FROM mahasiswa")
     db.disconnect()
-    return render_template('mahasiswa.html', mahasiswa=mahasiswa)
 
+<<<<<<< HEAD
 @app.route('/biodata')
 def biodata():
     db.connect()
@@ -112,36 +111,81 @@ def biodata():
 @app.route('/view', methods=["POST", "GET"])
 def view():
     return render_template('view.html', entries=["admin", "biodata", "mahasiswa", "nilai_mahasiswa", "orang_tua", "users"])
+=======
+    sidebar_list = get_sidebar_list(session.get('value', None))
+>>>>>>> b635f07e7b161ea25b64fcf349137aca36c0b5ba
 
-@app.route('/view/<table_name>', methods=["POST", "GET"])
-def view_table(table_name):
-    if 'admin' in session:  # Check if user is logged in
-        try:
-            # Connect to the database
-            db.connect()
+    return render_template('mahasiswa.html', mahasiswa=mahasiswa, sidebar_list=sidebar_list)
 
-            # Use safe string formatting to include table name in the query
-            columns_query = f"DESCRIBE `{table_name}`"
-            columns = db.fetch_data(columns_query)
-            first_columns = [column['Field'] for column in columns]
 
-            rows_query = f"SELECT * FROM `{table_name}`"
-            rows = db.fetch_data(rows_query)
-        except Exception as e:
-            # Handle database query errors gracefully
-            error_message = f"An error occurred while fetching data: {e}"
-            return render_template('error.html', error_message=error_message)
-        finally:
-            db.disconnect()
+@app.route('/chart-data')
+def chart_data():
+    data = {
+        "categories": [i+1 for i in range(12)],
+        "values": session.get("transcript", [])
+    }
+    return jsonify(data)
 
-        return render_template('view_table.html', 
-                               table_name=table_name, 
-                               rows=rows, 
-                               first_columns=first_columns)
-    else:
-        # Redirect to login page if user is not logged in
+
+@app.route('/nilai')
+def nilai():
+    db.connect()
+
+    username = session.get('username', None)
+
+    nim = db.fetch_data(f"SELECT nim FROM mahasiswa WHERE username = '{username}'")
+  
+    transcript = db.fetch_data(f"""
+                                SELECT * FROM transcript_nilai 
+                                WHERE mahasiswa_nim = '{nim[0]['nim']}'
+                                ORDER BY semester ASC
+                                """)
+
+    db.disconnect()
+
+    session['transcript'] = [transcript[i]['nilai'] for i in range(len(transcript))]
+
+    sidebar_list = get_sidebar_list(session.get('value', None))
+
+    return render_template('nilai.html', sidebar_list=sidebar_list, username=session.get('username'))
+
+
+@app.route('/jadwal')
+def jadwal():
+    sidebar_list = get_sidebar_list(session.get('value', None))
+    return render_template('jadwal.html', sidebar_list=sidebar_list)
+
+
+@app.route('/biodata')
+def biodata():
+    if 'username' not in session:
         return redirect(url_for('login'))
     
+    db.connect()
+
+    value = session.get('value', 'Guest')
+
+    if value not in ['Admin', 'Mahasiswa']:
+        return redirect(url_for('home'))
+    
+    if value == 'Admin':
+        biodata = db.fetch_data('''SELECT m.username, b.asal_sekolah, b.status_kelulusan, b.Gender 
+                                FROM biodata b, mahasiswa m 
+                                WHERE b.nim_mahasiswa = m.nim;''')
+    elif value == 'Mahasiswa':
+        biodata = db.fetch_data(f'''SELECT m.username, b.asal_sekolah, b.status_kelulusan, b.Gender 
+                                FROM biodata b, mahasiswa m 
+                                WHERE b.nim_mahasiswa = m.nim
+                                AND m.username = "{session.get('username')}";''')
+        
+    db.disconnect()
+
+    print(biodata)
+
+    sidebar_list = get_sidebar_list(session.get('value', None))
+
+    return render_template('biodata.html', biodata=biodata, sidebar_list=sidebar_list)
+
 
 @app.route('/create_student', methods=['GET', 'POST'])
 def create_student():
@@ -175,10 +219,49 @@ def edit_student(id):
     return render_template('edit_mahasiswa.html', student=student[0])
 
 
+@app.route('/delete_mahasiswa/<int:id>', methods=['POST'])
+def delete_mahasiswa(id):
+    try:
+        db.connect()
+        db.execute_query("DELETE FROM biodata WHERE nim_mahasiswa=%s", (id,))
+        db.execute_query("DELETE FROM transcript_nilai WHERE nim_mahasiswa=%s", (id,))
+        db.execute_query("DELETE FROM mahasiswa WHERE nim=%s", (id,))
+    finally:
+        db.disconnect()
+    return redirect('/mahasiswa')
+
+
+@app.route('/log', methods=['GET', 'POST'])
+def log():
+    db.connect()
+    mahasiswa_log = db.fetch_data("SELECT * FROM mahasiswa_log")
+    mahasiswa_delete_log = db.fetch_data("SELECT * FROM mahasiswa_delete_log")
+    db.disconnect()
+
+    texts = []
+    for things in mahasiswa_log:
+        texts += [f"email changed from {things['old_email']} to {things['new_email']} changed at {things['changed_at']}"]
+
+    # print(mahasiswa_delete_log)
+
+    for things in mahasiswa_delete_log:
+        texts += [f"username {things['username']} with nim {things['nim']} deleted at {things['deleted_at']}"]
+
+    # print(texts)
+
+    sidebar_list = get_sidebar_list(session.get('value', None))
+
+    return render_template('log.html', texts=texts, sidebar_list=sidebar_list)
+
+
 # page not found
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html', message=e), 404
 
+
 if __name__ == '__main__':
     app.run(port=1337, debug=True)
+
+
+

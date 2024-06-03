@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<<<<<<< HEAD
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -39,3 +40,32 @@
     </div>
 </body>
 </html>
+=======
+{% extends 'dashboard_layout.html' %}
+
+{% block list %}
+<li><button onclick="window.location.href='/dashboard'">Home</button></li>
+{% for bar in sidebar_list %}
+<li><button onclick="window.location.href='/{{ bar[0] }}'">{{ bar[1] }}</button></li>
+{% endfor %}
+{% endblock %}
+
+
+{% block header %}
+<h1>Mahasiswa</h1>
+{% endblock %}
+
+
+{% block section %}
+
+{% for student in biodata %}
+<div class="notion-block">
+    <h2>{{ student.username }}</h2>
+    <p><strong>Asal Sekolah: </strong>{{ student.asal_sekolah }}</p>
+    <p><strong>Status Kelulusan: </strong>{{ student.status_kelulusan }}</p>
+    <p><strong>Gender: </strong>{{ student.Gender }}</p>
+</div>
+{% endfor %}
+
+{% endblock %}
+>>>>>>> b635f07e7b161ea25b64fcf349137aca36c0b5ba
