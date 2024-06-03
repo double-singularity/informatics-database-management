@@ -170,11 +170,8 @@ def delete_mahasiswa(id):
     try:
         db.connect()
         db.execute_query("DELETE FROM biodata WHERE nim_mahasiswa=%s", (id,))
-        db.execute_query("DELETE FROM orang_tua WHERE nim_mahasiswa=%s", (id,))
+        db.execute_query("DELETE FROM transcript_nilai WHERE nim_mahasiswa=%s", (id,))
         db.execute_query("DELETE FROM mahasiswa WHERE nim=%s", (id,))
-        flash('Student deleted successfully.')
-    except Exception as e:
-        flash(f'Error deleting student: {e}')
     finally:
         db.disconnect()
     return redirect('/mahasiswa')
@@ -183,16 +180,20 @@ def delete_mahasiswa(id):
 @app.route('/log', methods=['GET', 'POST'])
 def log():
     db.connect()
-    data = db.fetch_data("SELECT * FROM mahasiswa_log")
+    mahasiswa_log = db.fetch_data("SELECT * FROM mahasiswa_log")
+    mahasiswa_delete_log = db.fetch_data("SELECT * FROM mahasiswa_delete_log")
     db.disconnect()
 
-    print(data)
-
     texts = []
-    for things in data:
+    for things in mahasiswa_log:
         texts += [f"email changed from {things['old_email']} to {things['new_email']} changed at {things['changed_at']}"]
 
-    print(texts)
+    # print(mahasiswa_delete_log)
+
+    for things in mahasiswa_delete_log:
+        texts += [f"username {things['username']} with nim {things['nim']} deleted at {things['deleted_at']}"]
+
+    # print(texts)
 
     sidebar_list = get_sidebar_list(session.get('value', None))
 
@@ -207,4 +208,6 @@ def page_not_found(e):
 
 if __name__ == '__main__':
     app.run(port=1337, debug=True)
+
+
 
