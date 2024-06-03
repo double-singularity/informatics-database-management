@@ -131,7 +131,13 @@ def nilai():
 
     sidebar_list = get_sidebar_list(session.get('value', None))
 
-    return render_template('nilai.html', sidebar_list=sidebar_list)
+    return render_template('nilai.html', sidebar_list=sidebar_list, username=session.get('username'))
+
+
+@app.route('/jadwal')
+def jadwal():
+    sidebar_list = get_sidebar_list(session.get('value', None))
+    return render_template('jadwal.html', sidebar_list=sidebar_list)
 
 
 @app.route('/biodata')
