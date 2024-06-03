@@ -97,23 +97,7 @@ def mahasiswa():
     mahasiswa = db.fetch_data("SELECT * FROM mahasiswa")
     db.disconnect()
 
-<<<<<<< HEAD
-@app.route('/biodata')
-def biodata():
-    db.connect()
-    mahasiswa = db.fetch_data("SELECT * FROM biodata")
-    db.disconnect()
-    return render_template('biodata.html', biodata=biodata)
-
-
-
-
-@app.route('/view', methods=["POST", "GET"])
-def view():
-    return render_template('view.html', entries=["admin", "biodata", "mahasiswa", "nilai_mahasiswa", "orang_tua", "users"])
-=======
     sidebar_list = get_sidebar_list(session.get('value', None))
->>>>>>> b635f07e7b161ea25b64fcf349137aca36c0b5ba
 
     return render_template('mahasiswa.html', mahasiswa=mahasiswa, sidebar_list=sidebar_list)
 
